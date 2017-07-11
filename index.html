@@ -5,15 +5,12 @@
 </head>
 <body>
 	<label for="files">Select image files: </label><input type="file" name="files" id="files" multiple><br>
-	<label for="quality">Quality: </label><input type="range" name="quality" id="quality" min="1" max="10" value="5"><label id="qualityValue">5</label><br>
+	<!--<label for="quality">Quality: </label><input type="range" name="quality" id="quality" min="1" max="10" value="5"><label id="qualityValue">5</label><br>-->
 	<label for="fps">Framerate (FPS): </label><input type="number" name="fps" id="fps" placeholder="10"><br>
 	<label for="loop">Loop (0=forever): </label><input type="number" name="loop" id="loop" placeholder="0"><br><br>
 	<input type="button" id="go" value="GO"></input><br>
 	<div id="result"></div>
-	<script src="b64.js"></script>
-	<script src="LZWEncoder.js"></script>
-	<script src="NeuQuant.js"></script>
-	<script src="GIFEncoder.js"></script>
+	
 	<script src="app.js"></script>
 </body>
 
