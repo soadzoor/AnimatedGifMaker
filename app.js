@@ -3,6 +3,32 @@
 	document.getElementById("qualityValue").innerHTML = document.getElementById("quality").value;
 });*/
 
+var WIDTH  = document.getElementById("width");
+var HEIGHT = document.getElementById("height");
+var ratio = 4 / 3;
+
+document.getElementById("files").addEventListener("change", function()
+{
+	var img = new Image();
+	img.onload = function()
+	{
+		WIDTH.value = img.width;
+		HEIGHT.value = img.height;
+		
+		ratio = WIDTH.value / HEIGHT.value;
+	}
+	img.src = URL.createObjectURL(document.getElementById("files").files[0]);
+});
+
+WIDTH.addEventListener("change", function()
+{
+	HEIGHT.value = Math.round(WIDTH.value / ratio);
+});
+
+HEIGHT.addEventListener("change", function()
+{
+	WIDTH.value = Math.round(HEIGHT.value * ratio);
+});
 
 document.getElementById("go").addEventListener("click", function()
 {
@@ -22,14 +48,14 @@ document.getElementById("go").addEventListener("click", function()
 	
 	var img = new Image();
 	
-	img.onload = function ()
+	img.onload = function()
 	{
 		var canvas = document.createElement("canvas");
 		var ctx    = canvas.getContext("2d");
 		
-		canvas.width  = img.width;
-		canvas.height = img.height;
-		ctx.drawImage(img, 0, 0);
+		canvas.width  = WIDTH.value;
+		canvas.height = HEIGHT.value;
+		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 		
 		frames.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
 		
