@@ -75,6 +75,7 @@ document.getElementById("go").addEventListener("click", function()
 				}
 			});
 			
+			document.getElementById("result").innerHTML = "<p>Loading...</p><br>";
 			gifWorker.postMessage({
 				frames: frames,
 				delay: ms,
