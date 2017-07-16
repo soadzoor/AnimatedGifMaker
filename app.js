@@ -42,7 +42,8 @@ document.getElementById("go").addEventListener("click", function()
 	var fps = document.getElementById("fps").value || 10;
 	var ms = 1000 / fps;
 	var matte = [255, 255, 255];
-	var transparent = [0, 255, 0];
+	var transparent = [255, 255, 255];
+	var dither = document.getElementById("dither").checked;
 
 	var frames = [];
 	
@@ -82,7 +83,8 @@ document.getElementById("go").addEventListener("click", function()
 				loop: loop,
 				sample: 10,
 				matte: matte,
-				transparent: transparent
+				transparent: transparent,
+				dither: dither
 			});
 		}
 		else

@@ -78,6 +78,7 @@ self.onmessage = function(event) {
 
   var matte = event.data.matte || [255,255,255];
   var transparent = event.data.transparent || false;
+  var dither = event.data.dither || false;
 
   var startTime = Date.now();
 
@@ -97,19 +98,29 @@ self.onmessage = function(event) {
     // initialize quantizer
     var paletteRGB = nq.process(); // create reduced palette
     var palette = rgb2num(paletteRGB);
-    // map image pixels to new palette
-    var k = 0;
-    for (var j = 0; j < nPix; j++) {
-      var index = nq.map(nqInPixels[k++] & 0xff, nqInPixels[k++] & 0xff, nqInPixels[k++] & 0xff);
-      // usedEntry[index] = true;
-      map[j] = index;
-    }
+    
 
     var options = { palette: new Uint32Array( palette ), delay: delay };
 
-    if (thereAreTransparentPixels) {
+    if (thereAreTransparentPixels)
+	{
       options.transparent = nq.map(transparent[0], transparent[1], transparent[2]);
       options.disposal = 2; // Clear between frames
+    }
+	
+	if (dither === true)
+	{
+		gif.dither(frame, nq, paletteRGB);
+		nqInPixels = rgba2rgb(data, matte, transparent);
+	}
+	
+	// map image pixels to new palette
+    var k = 0;
+    for (var j = 0; j < nPix; j++)
+	{
+      var index = nq.map(nqInPixels[k++] & 0xff, nqInPixels[k++] & 0xff, nqInPixels[k++] & 0xff);
+      // usedEntry[index] = true;
+      map[j] = index;
     }
 
     gif.addFrame( 0, 0, frame.width, frame.height, new Uint8Array( map ), options );

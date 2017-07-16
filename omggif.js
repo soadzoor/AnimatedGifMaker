@@ -102,6 +102,79 @@ function GifWriter(buf, width, height, gopts) {
 
 
   var ended = false;
+  
+  this.clamp = function(num, min, max)
+  {
+	  return num < min ? min : num > max ? max : num;
+  }
+  
+  this.findClosestRGB = function(r, g, b, nq)
+  {
+	  return nq.map(r, g, b);
+  }
+  
+  this.dither = function(frame, nq, palette)
+  {
+	  const floydSteinberg = [
+		[7 / 16, 1, 0],
+		[3 / 16, -1, 1],
+		[5 / 16, 0, 1],
+		[1 / 16, 1, 1]
+	];
+
+	let index  = 0;
+	let width  = frame.width;
+	let height = frame.height;
+	let data   = frame.data;
+	let indexedPixels = new Uint8Array(data.length / 4); // /3 for rgb? this one is rgba
+
+	for (let y = 0; y < height; ++y)
+	{
+		for (let x = 0; x < width; ++x)
+		{
+			index = (y*width) + x;
+			// Get original colour
+
+			let idx = index*4;
+
+			let r1 = data[idx];
+			let g1 = data[idx + 1];
+			let b1 = data[idx + 2];
+
+			let p = palette;
+			// Get converted colour
+			idx = this.findClosestRGB(r1, g1, b1, nq);
+			indexedPixels[index] = idx;
+			idx *= 3;
+
+			let r2 = p[idx];
+			let g2 = p[idx + 1];
+			let b2 = p[idx + 2];
+
+			let er = r1 - r2;
+			let eg = g1 - g2;
+			let eb = b1 - b2;
+
+			for (let i = 0; i < floydSteinberg.length; ++i)
+			{
+				let x1 = floydSteinberg[i][1];
+				let y1 = floydSteinberg[i][2];
+
+				if (x1 + x >= 0 && x1+x < width && y1+y >= 0 && y1 + y < height)
+				{
+					let d = floydSteinberg[i][0];
+					idx = index + x1 + (y1*width);
+					idx *= 4;
+
+					data[idx]     = this.clamp(data[idx    ] + er*d, 0, 255);
+					data[idx + 1] = this.clamp(data[idx + 1] + eg*d, 0, 255);
+					data[idx + 2] = this.clamp(data[idx + 2] + eb*d, 0, 255);
+				}
+			}
+		}
+	}
+  }
+  
 
   this.addFrame = function(x, y, w, h, indexed_pixels, opts) {
     if (ended === true) { --p; ended = false; }  // Un-end.
